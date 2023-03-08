@@ -1,4 +1,11 @@
 class AlertsController < ApplicationController
+
+  def index
+    @alerts = Alert.all
+
+    render json: { alerts: @alerts }
+  end
+
   def create
     alert = Alert.new(alert_params)
 

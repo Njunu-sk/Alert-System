@@ -1,31 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe "Alerts", type: :request do
+  let!(:alert1) { Alert.create(type: "portal_opened", title: "Alert 1") }
+  let!(:alert2) { Alert.create(type: "portal_closed", title: "Alert 2") }
+  
+  let(:valid_attributes) do
+    {
+      alert: {
+        type: "portal_opened",
+        title: "Portal Opened",
+        description: "A portal was opened",
+        origin: "123.89.00.2",
+        tags: ["versions2.3.9", "production"]
+      }
+    }
+  end
+
+  let(:invalid_attributes) do
+    {
+      alert: {
+        type: "invalid",
+        title: "invalid Alert",
+        description: "An invalid alert was created",
+        origin: "123.89.00.2",
+        tags: ["versions2.3.9", "production"]
+      }
+    }
+  end
+
   describe "POST /create" do
-    let(:valid_attributes) do
-      {
-        alert: {
-          type: "portal_opened",
-          title: "Portal Opened",
-          description: "A portal was opened",
-          origin: "123.89.00.2",
-          tags: ["versions2.3.9", "production"]
-        }
-      }
-    end
-
-    let(:invalid_attributes) do
-      {
-        alert: {
-          type: "invalid",
-          title: "invalid Alert",
-          description: "An invalid alert was created",
-          origin: "123.89.00.2",
-          tags: ["versions2.3.9", "production"]
-        }
-      }
-    end
-
     context "with valid attributes" do
       it "creates a new alert" do
         expect {
@@ -44,6 +47,26 @@ RSpec.describe "Alerts", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq("application/json; charset=utf-8")
         expect(JSON.parse(response.body)).to eq({ "error" => "Invalid alert type" })
+      end
+    end
+  end
+
+  describe "GET /index" do
+    context "when they are alerts in the database" do
+      it "returns a JSON response with all the alerts" do
+        get "/alerts"
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['alerts'].count).to eq(2)
+      end
+    end
+
+    context "when there are no alerts in the database" do
+      before { Alert.delete_all }
+
+      it "retuns an empty JSON reponse" do
+        get "/alerts"
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)['alerts'].count).to eq(0)
       end
     end
   end
