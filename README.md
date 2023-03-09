@@ -1,24 +1,68 @@
-# README
+# Alert API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+An alert system.
 
-Things you may want to cover:
+# Clone the Application
 
-* Ruby version
+```
+git clone git@github.com:Njunu-sk/Alert-System.git
+```
 
-* System dependencies
+# Set up the Application
 
-* Configuration
+Ruby Version
 
-* Database creation
+```
+ruby "3.1.2"
+```
 
-* Database initialization
+Bundle Install
 
-* How to run the test suite
+```
+bundle install
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Run migrations
 
-* Deployment instructions
+```
+bundle exec rails db:reset
+```
 
-* ...
+Run spec file
+
+```
+bundle exec rspec
+```
+
+# Requirements
+
+## All pages should be authenticated
+
+Anoymous user trying to create an alert
+
+![unauth_user](./images/unauth_user.png)
+
+### Authenticate User
+
+Sign Up a new User
+
+![sign_up](./images/users_signup.png)
+
+Sign In a User
+
+![login](./images/user_login.png)
+
+## JSON API that can create alert into a database
+
+- Only alerts with types `["portal_opened", "portal_closed"]` should be saved in the database
+
+![create_alert](./images/create_alert.png)
+
+## JSON API that can list all alerts
+
+![all_alerts](./images/list_alerts.png)
+
+## JSON API that can list an alert
+
+![alert](./images/show_alert.png)
+

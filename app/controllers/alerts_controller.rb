@@ -6,6 +6,12 @@ class AlertsController < ApplicationController
     render json: { alerts: @alerts }
   end
 
+  def show
+    @alert = Alert.find(params[:id])
+
+    render json: { alert: @alert }
+  end
+
   def create
     alert = current_user.alerts.create!(alert_params)
 
