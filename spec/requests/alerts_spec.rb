@@ -57,7 +57,7 @@ RSpec.describe "Alerts", type: :request do
   describe "GET /index" do
     context "when they are alerts in the database" do
       it "returns a JSON response with all the alerts" do
-        get "/alerts"
+        get "/alerts", headers: valid_headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['alerts'].count).to eq(2)
       end
@@ -67,7 +67,7 @@ RSpec.describe "Alerts", type: :request do
       before { Alert.delete_all }
 
       it "retuns an empty JSON reponse" do
-        get "/alerts"
+        get "/alerts", headers: valid_headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['alerts'].count).to eq(0)
       end
