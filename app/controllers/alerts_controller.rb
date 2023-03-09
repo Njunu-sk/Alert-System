@@ -1,5 +1,5 @@
 class AlertsController < ApplicationController
-
+  
   def index
     @alerts = Alert.all
 
@@ -7,7 +7,7 @@ class AlertsController < ApplicationController
   end
 
   def create
-    alert = Alert.new(alert_params)
+    alert = current_user.alerts.create!(alert_params)
 
     if alert.type.in?(%w[portal_opened portal_closed])
       if alert.save

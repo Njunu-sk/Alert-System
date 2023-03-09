@@ -1,12 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe "Alerts", type: :request do
-  let!(:alert1) { Alert.create(type: "portal_opened", title: "Alert 1") }
-  let!(:alert2) { Alert.create(type: "portal_closed", title: "Alert 2") }
+  let!(:user) { User.create(name: "user1", email: "user1@gmail.com", password: "password") }
+  let!(:alert1) { Alert.create(type: "portal_opened", title: "Alert 1", user_id: user.id) }
+  let!(:alert2) { Alert.create(type: "portal_closed", title: "Alert 2", user_id: user.id) }
   
   let(:valid_attributes) do
     {
       alert: {
+        user_id: user.id,
         type: "portal_opened",
         title: "Portal Opened",
         description: "A portal was opened",
@@ -19,6 +21,7 @@ RSpec.describe "Alerts", type: :request do
   let(:invalid_attributes) do
     {
       alert: {
+        user_id: user.id,
         type: "invalid",
         title: "invalid Alert",
         description: "An invalid alert was created",
@@ -32,7 +35,7 @@ RSpec.describe "Alerts", type: :request do
     context "with valid attributes" do
       it "creates a new alert" do
         expect {
-          post "/alerts", params: valid_attributes.to_json, headers: { "CONTENT_TYPE" => "application/json" }
+          post "/alerts", params: valid_attributes.to_json, headers: valid_headers
         }.to change(Alert, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -46,7 +49,7 @@ RSpec.describe "Alerts", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq("application/json; charset=utf-8")
-        expect(JSON.parse(response.body)).to eq({ "error" => "Invalid alert type" })
+        expect(JSON.parse(response.body)).to eq({"message"=>"Missing token"})
       end
     end
   end
@@ -54,7 +57,7 @@ RSpec.describe "Alerts", type: :request do
   describe "GET /index" do
     context "when they are alerts in the database" do
       it "returns a JSON response with all the alerts" do
-        get "/alerts"
+        get "/alerts", headers: valid_headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['alerts'].count).to eq(2)
       end
@@ -64,7 +67,7 @@ RSpec.describe "Alerts", type: :request do
       before { Alert.delete_all }
 
       it "retuns an empty JSON reponse" do
-        get "/alerts"
+        get "/alerts", headers: valid_headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['alerts'].count).to eq(0)
       end

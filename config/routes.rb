@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
   resources :alerts, only: [:create, :index]
+  post 'auth/login', to: 'authentication#authenticate'
+  post 'signup', to: 'users#create'
 end

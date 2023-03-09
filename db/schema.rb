@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_211116) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_09_095408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,9 +22,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_211116) do
     t.string "tags", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["tags"], name: "index_alerts_on_tags", using: :gin
     t.index ["type"], name: "index_alerts_on_type"
-    t.check_constraint "type::text = ANY (ARRAY['portal_opened'::character varying, 'portal_closed'::character varying]::text[])", name: "check_alert_type"
+    t.index ["user_id"], name: "index_alerts_on_user_id"
+    t.check_constraint "type::text = ANY (ARRAY['portal_opened'::character varying::text, 'portal_closed'::character varying::text])", name: "check_alert_type"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "alerts", "users"
 end
