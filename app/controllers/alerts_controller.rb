@@ -1,7 +1,7 @@
 class AlertsController < ApplicationController
   
   def index
-    @alerts = Alert.all
+    @alerts = Alert.order(created_at: :desc)
 
     render json: { alerts: @alerts }
   end
@@ -22,7 +22,7 @@ class AlertsController < ApplicationController
         render json: alert.errors, status: :unprocessable_entity
       end
     else
-      render json: { error: "Invalid alert type" }, status: :unprocessable_entity
+      render json: { message: "Invalid alert type" }, status: :bad_request
     end
   end
 
